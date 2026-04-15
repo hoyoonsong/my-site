@@ -1,6 +1,4 @@
 {
-  "dependencies": {
-    "@tailwindcss/vite": "^4.2.2",
-    "tailwindcss": "^4.2.2"
-  }
+  "private": true,
+  "description": "Monorepo root — app lives in my-app/. Install and build from my-app for local dev."
 }
