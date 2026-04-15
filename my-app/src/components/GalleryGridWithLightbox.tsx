@@ -12,13 +12,15 @@ const SWIPE_PX = 48
 
 type Props = {
   items: GalleryItem[]
+  /** Shown when `items` is empty (e.g. no search matches). */
+  emptyMessage?: string
 }
 
 function tileLabel(item: GalleryItem): string {
   return item.caption ? `${item.title}. ${item.caption}` : item.title
 }
 
-export function GalleryGridWithLightbox({ items }: Props) {
+export function GalleryGridWithLightbox({ items, emptyMessage }: Props) {
   const [active, setActive] = useState<number | null>(null)
   const titleId = useId()
   const captionId = useId()
@@ -32,6 +34,10 @@ export function GalleryGridWithLightbox({ items }: Props) {
   }, [items])
 
   const count = items.length
+
+  useEffect(() => {
+    setActive(null)
+  }, [items])
 
   const close = useCallback(() => setActive(null), [])
 
@@ -82,7 +88,9 @@ export function GalleryGridWithLightbox({ items }: Props) {
 
   if (count === 0) {
     return (
-      <p className="gallery-empty">No photos in this album yet.</p>
+      <p className="gallery-empty">
+        {emptyMessage ?? 'No photos in this album yet.'}
+      </p>
     )
   }
 
