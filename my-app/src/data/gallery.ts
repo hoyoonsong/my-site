@@ -35,6 +35,8 @@ export type GalleryManifestRow = {
   file: string;
   title?: string;
   caption?: string;
+  /** Mark exactly one row per album as the hub cover. */
+  thumbnail?: boolean;
 };
 
 /** Short line for the gallery hub cards. */
@@ -60,6 +62,7 @@ export const GALLERY_MANIFEST: GalleryManifestRow[] = [
     file: "20230721_Boys Nation_Idaho_Hoyoon Song.jpg",
     title: "Boys Nation — Idaho",
     caption: "American Legion Boys Nation, representing Idaho.",
+    thumbnail: true,
   },
   {
     album: "me",
@@ -254,6 +257,7 @@ export const GALLERY_MANIFEST: GalleryManifestRow[] = [
     file: "IMG_2949.jpeg",
     title: "Rishi Sunak",
     caption: "Prime Minister of the United Kingdom",
+    thumbnail: true,
   },
   {
     album: "mentors",
@@ -333,7 +337,11 @@ export const GALLERY_MANIFEST: GalleryManifestRow[] = [
     title: "Bishop Peter Christensen",
     caption: "at my graduation",
   },
-  { album: "me", file: "IMG_4948.jpeg", title: "Ice Bucket Challenge" },
+  {
+    album: "me",
+    file: "IMG_4948.jpeg",
+    title: "Ice Bucket Challenge",
+  },
   {
     album: "mentors",
     file: "IMG_5362.jpeg",
@@ -593,7 +601,7 @@ export const GALLERY_MANIFEST: GalleryManifestRow[] = [
     file: "IMG_8547.jpeg",
     title: "Raul Torres",
     caption:
-      "Attorne General of New Mexico (minutes before the landmark liability case against Meta",
+      "Attorney General of New Mexico (minutes before the landmark liability case against Meta",
   },
   {
     album: "me",
@@ -674,7 +682,7 @@ export const GALLERY_MANIFEST: GalleryManifestRow[] = [
       "Founder/CEO of Common Sense Media and Stanford professor (I'm his head Course Assistant)",
   },
 
-  { album: "misc", file: "IMG_9915.jpeg", title: "Misc" },
+  { album: "misc", file: "IMG_9915.jpeg", title: "Misc", thumbnail: true },
 ];
 
 function prettifyFilename(name: string): string {
@@ -810,6 +818,27 @@ export function getGallerySection(
   id: GallerySectionId,
 ): GallerySection | undefined {
   return gallerySections.find((s) => s.id === id);
+}
+
+/**
+ * Pick an album's hub cover:
+ *   1. the manifest row in that album with `thumbnail: true`
+ *   2. otherwise, the first item in the album
+ * Returns `undefined` only if the album is empty.
+ */
+export function getAlbumCover(id: GallerySectionId): GalleryItem | undefined {
+  const section = getGallerySection(id);
+  if (!section) return undefined;
+  const flagged = GALLERY_MANIFEST.find(
+    (row) => row.album === id && row.thumbnail === true,
+  );
+  if (flagged) {
+    const match = section.items.find(
+      (item) => fileFromGallerySrc(item.src) === flagged.file,
+    );
+    if (match) return match;
+  }
+  return section.items[0];
 }
 
 /** Flat list in album order (me → mentors → misc). */

@@ -3,6 +3,7 @@ import {
   GALLERY_FOLDER_BLURBS,
   type GallerySectionId,
   gallerySections,
+  getAlbumCover,
 } from "../data/gallery";
 
 const ROUTES: Record<GallerySectionId, string> = {
@@ -20,14 +21,19 @@ export function GalleryHub() {
 
       <ul className="gallery-hub-grid">
         {gallerySections.map((section) => {
-          const cover = section.items[0]?.src;
+          const cover = getAlbumCover(section.id);
           const count = section.items.length;
           return (
             <li key={section.id}>
               <Link to={ROUTES[section.id]} className="gallery-folder-card">
                 <span className="gallery-folder-card__visual">
                   {cover ? (
-                    <img src={cover} alt="" loading="lazy" decoding="async" />
+                    <img
+                      src={cover.src}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
                   ) : (
                     <span className="gallery-folder-card__empty">Empty</span>
                   )}
